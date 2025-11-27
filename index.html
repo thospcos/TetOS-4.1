@@ -92,31 +92,41 @@ function fadeInAll(callback){
     setTimeout(()=>{ if (callback) callback(); }, 600);
 }
 
-function showFinalWhite(){
+function showFinalWhite() {
+    // Instant pop
+    screen.style.transition = "none";
+    textBox.style.transition = "none";
+
     screen.style.background = "white";
+    screen.style.opacity = 1;
+
     textBox.style.color = "black";
+    textBox.style.opacity = 1;
     textBox.innerHTML = "";
 
-    let line1 = document.createElement("div");
-    let span1 = document.createElement("span");
+    // Build DOM
+    const line1 = document.createElement("div");
+    const span1 = document.createElement("span");
     span1.className = "word";
     span1.textContent = "Machine";
-    let span2 = document.createElement("span");
+
+    const span2 = document.createElement("span");
     span2.className = "word";
     span2.textContent = "Love";
+
     line1.appendChild(span1);
     line1.appendChild(span2);
 
-    let line2 = document.createElement("div");
-    let by = document.createElement("span");
+    const line2 = document.createElement("div");
+    const by = document.createElement("span");
     by.className = "bySmall";
     by.textContent = "by";
 
-    let jamie = document.createElement("span");
+    const jamie = document.createElement("span");
     jamie.className = "artistWord";
     jamie.textContent = "Jamie";
 
-    let paige = document.createElement("span");
+    const paige = document.createElement("span");
     paige.className = "artistWord";
     paige.textContent = "Paige";
 
@@ -124,7 +134,7 @@ function showFinalWhite(){
     line2.appendChild(jamie);
     line2.appendChild(paige);
 
-    let feat = document.createElement("div");
+    const feat = document.createElement("div");
     feat.className = "feat";
     feat.textContent = "featuring Kasane Teto SV";
 
@@ -132,28 +142,28 @@ function showFinalWhite(){
     textBox.appendChild(line2);
     textBox.appendChild(feat);
 
-    textBox.style.opacity = 0;
-    screen.style.opacity = 0;
+    // Reset opacity
+    span1.style.opacity = 0;
+    span2.style.opacity = 0;
+    by.style.opacity = 0;
+    jamie.style.opacity = 0;
+    paige.style.opacity = 0;
+    feat.style.opacity = 0;
 
-    setTimeout(()=>{
-        fadeInAll(()=>{
-            textBox.style.opacity = 1;
-
-            setTimeout(()=>{ span1.style.opacity = 1; }, 600);
-            setTimeout(()=>{ span2.style.opacity = 1; }, 1200);
-            setTimeout(()=>{ by.style.opacity = 1; }, 1800);
-            setTimeout(()=>{ jamie.style.opacity = 1; }, 2400);
-            setTimeout(()=>{ paige.style.opacity = 1; }, 3000);
-            setTimeout(()=>{ feat.style.opacity = 1; }, 3600);
-        });
-    }, 80);
+    // Reveal sequence
+    setTimeout(()=>{ span1.style.opacity = 1; }, 100);
+    setTimeout(()=>{ span2.style.opacity = 1; }, 700);
+    setTimeout(()=>{ by.style.opacity = 1; }, 1300);
+    setTimeout(()=>{ jamie.style.opacity = 1; }, 1900);
+    setTimeout(()=>{ paige.style.opacity = 1; }, 2500);
+    setTimeout(()=>{ feat.style.opacity = 1; }, 3100);
 }
 
 /* TIMELINE */
 
 setTimeout(()=>{
     fadeOutAll(()=>{
-        setText("This song is a tribute to\n耳のあるロボットの唄\n(Song of the Eared Robot) by nwp8861.");
+        setText("This song is a tribute to\n耳のあるロボットの唄\n(Song of the Eared Robot)\nby nwp8861.");
         fadeInAll();
     });
 }, 21000);
@@ -171,6 +181,7 @@ setTimeout(()=>{
     });
 }, 31000);
 </script>
+
 
 </body>
 </html>
