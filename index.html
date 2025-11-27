@@ -13,6 +13,19 @@
         font-family:Georgia, serif;
     }
 
+    #startScreen {
+        position:absolute;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:black;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        font-size:40px;
+        cursor:pointer;
+        z-index:9999;
+    }
+
     #screen {
         position:absolute;
         top:0; left:0;
@@ -34,76 +47,61 @@
         transition:opacity .45s ease;
     }
 
-    .word {
+    .word, .bySmall, .artistWord, .feat {
         display:inline-block;
-        margin-right:18px;
-        opacity:0;
-        transition:opacity .45s ease;
-        font-size:110px;
+        opacity:1;        /* NO FADES */
+        transition:none;  /* REMOVE ALL FADE ANIMATION */
     }
 
-    .bySmall {
-        display:inline-block;
-        margin-right:12px;
-        opacity:0;
-        transition:opacity .45s ease;
-        font-size:28px;
-    }
-
-    .artistWord {
-        display:inline-block;
-        margin-left:6px;
-        opacity:0;
-        transition:opacity .45s ease;
-        font-size:64px;
-    }
-
-    .feat {
-        margin-top:18px;
-        opacity:0;
-        transition:opacity .45s ease;
-        font-size:28px;
-        display:block;
-    }
+    .word { font-size:110px; margin-right:18px; }
+    .bySmall { font-size:28px; margin-right:12px; }
+    .artistWord { font-size:64px; margin-left:6px; }
+    .feat { font-size:28px; display:block; margin-top:18px; }
 </style>
 </head>
 
 <body>
 
-<!-- 🔊 MUSIC (auto-plays when page loads) -->
-<audio id="bgm" src="machine_love.mp3.mp3" autoplay loop></audio>
+<!-- CLICK TO START -->
+<div id="startScreen">Click To Start</div>
+
+<audio id="bgm" src="machine_love.mp3.mp3" loop></audio>
 
 <div id="screen"></div>
 <div id="textBox">koi o shite.</div>
 
 <script>
-// ==== ELEMENTS ====
+// ELEMENTS
+const startScreen = document.getElementById("startScreen");
+const bgm = document.getElementById("bgm");
 const screen = document.getElementById("screen");
 const textBox = document.getElementById("textBox");
 
-// ==== HELPERS ====
-function setText(t){ textBox.innerText = t; }
-function setHTML(h){ textBox.innerHTML = h; }
+// CLICK → ENABLE SOUND + START SEQUENCE
+startScreen.onclick = () => {
+    startScreen.style.display = "none";
+    bgm.play().catch(()=>{});
+    startSequence();
+};
 
+// HELPERS
+function setText(t){ textBox.innerText = t; }
 function fadeOutAll(callback){
     screen.style.opacity = 0;
     textBox.style.opacity = 0;
-    setTimeout(()=>{ if (callback) callback(); }, 600);
+    setTimeout(()=>callback && callback(), 600);
 }
-
 function fadeInAll(callback){
     screen.style.opacity = 1;
     textBox.style.opacity = 1;
-    setTimeout(()=>{ if (callback) callback(); }, 600);
+    setTimeout(()=>callback && callback(), 600);
 }
 
-// ==== FINAL WHITE SCREEN (NO FADE) ====
+// FINAL WHITE SCREEN (NO FADES)
 function showFinalWhite() {
-    // disable fades
     screen.style.transition = "none";
     textBox.style.transition = "none";
 
-    // immediate pop
     screen.style.background = "white";
     screen.style.opacity = 1;
 
@@ -111,7 +109,7 @@ function showFinalWhite() {
     textBox.innerHTML = "";
     textBox.style.opacity = 1;
 
-    // build elements
+    // CREATE ELEMENTS
     const line1 = document.createElement("div");
     const span1 = document.createElement("span");
     span1.className = "word";
@@ -149,46 +147,37 @@ function showFinalWhite() {
     textBox.appendChild(line2);
     textBox.appendChild(feat);
 
-    // start hidden
-    span1.style.opacity = 0;
-    span2.style.opacity = 0;
-    by.style.opacity = 0;
-    jamie.style.opacity = 0;
-    paige.style.opacity = 0;
-    feat.style.opacity = 0;
-
-    // reveal sequence
-    setTimeout(()=>{ span1.style.opacity = 1; }, 100);
-    setTimeout(()=>{ span2.style.opacity = 1; }, 700);
-    setTimeout(()=>{ by.style.opacity = 1; }, 1300);
-    setTimeout(()=>{ jamie.style.opacity = 1; }, 1900);
-    setTimeout(()=>{ paige.style.opacity = 1; }, 2500);
-    setTimeout(()=>{ feat.style.opacity = 1; }, 3100);
+    // POP IN (NO FADE)
+    setTimeout(()=>{ span1.style.display = "inline-block"; }, 100);
+    setTimeout(()=>{ span2.style.display = "inline-block"; }, 300);
+    setTimeout(()=>{ by.style.display = "inline-block"; }, 500);
+    setTimeout(()=>{ jamie.style.display = "inline-block"; }, 700);
+    setTimeout(()=>{ paige.style.display = "inline-block"; }, 900);
+    setTimeout(()=>{ feat.style.display = "block"; }, 1100);
 }
 
+// TIMELINE (STARTS AFTER CLICK)
+function startSequence() {
+    setTimeout(()=>{
+        fadeOutAll(()=>{
+            setText("This song is a tribute to\n耳のあるロボットの唄\n(Song of the Eared Robot)\nby nwp8861.");
+            fadeInAll();
+        });
+    }, 21000);
 
-// ==== TIMELINE EVENTS ====
+    setTimeout(()=>{
+        fadeOutAll(()=>{
+            setText("It is about the truths that lay\nin hiding within artifice,\nand a computer falling in love.");
+            fadeInAll();
+        });
+    }, 27000);
 
-setTimeout(()=>{
-    fadeOutAll(()=>{
-        setText("This song is a tribute to\n耳のあるロボットの唄\n(Song of the Eared Robot)\nby nwp8861.");
-        fadeInAll();
-    });
-}, 21000);
-
-setTimeout(()=>{
-    fadeOutAll(()=>{
-        setText("It is about the truths that lay\nin hiding within artifice,\nand a computer falling in love.");
-        fadeInAll();
-    });
-}, 27000);
-
-setTimeout(()=>{
-    fadeOutAll(()=>{
-        showFinalWhite();
-    });
-}, 31000);
-
+    setTimeout(()=>{
+        fadeOutAll(()=>{
+            showFinalWhite();
+        });
+    }, 31000);
+}
 </script>
 
 </body>
