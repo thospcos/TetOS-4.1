@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Tet Loading</title>
+<title>Machine Love</title>
 <style>
     body {
         margin: 0;
@@ -12,16 +12,26 @@
         overflow: hidden;
     }
 
-    #text {
+    #textBox {
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        font-size: 28px;
         color: black;
-        opacity: 0;
+        font-size: 60px;
         text-align: center;
-        transition: opacity 1.5s linear;
+        white-space: pre-wrap;
+    }
+
+    .line {
+        margin: 10px 0;
+    }
+
+    .word {
+        display: inline-block;
+        opacity: 0;
+        transition: opacity 0s; /* NO fade */
+        margin: 0 10px;
     }
 
     #whiteScreen {
@@ -31,7 +41,7 @@
         width: 100%;
         height: 100%;
         background: white;
-        display: none; /* starts off */
+        display: none; /* pops instantly */
     }
 </style>
 </head>
@@ -39,51 +49,80 @@
 
 <audio id="bgm" src="machine_love.mp3.mp3" autoplay loop></audio>
 
-<div id="text"></div>
 <div id="whiteScreen"></div>
+<div id="textBox"></div>
 
 <script>
-    const textBox = document.getElementById("text");
-    const whiteScreen = document.getElementById("whiteScreen");
-    const bgm = document.getElementById("bgm");
+const textBox = document.getElementById("textBox");
+const bgm = document.getElementById("bgm");
+const whiteScreen = document.getElementById("whiteScreen");
 
-    // Force audio play on refresh
-    document.addEventListener("DOMContentLoaded", () => {
-        bgm.volume = 0.7;
-        bgm.play().catch(() => {
-            // If blocked, wait for a click
-            document.body.addEventListener("click", () => bgm.play());
-        });
+document.addEventListener("DOMContentLoaded", () => {
+    bgm.volume = 0.7;
+    bgm.play().catch(() => {
+        document.body.addEventListener("click", () => bgm.play());
     });
+});
 
-    function showText(t, duration = 2500) {
-        return new Promise(resolve => {
-            textBox.innerText = t;
-            textBox.style.opacity = 1;
-
-            setTimeout(() => {
-                textBox.style.opacity = 0;
-                setTimeout(resolve, 1500);
-            }, duration);
-        });
-    }
-
-    async function sequence() {
-        await showText("initializing system...");
-        await showText("loading data fragments...");
-        await showText("establishing connection...");
-        await showText("it is about the truth...");
-
-        // POP WHITE SCREEN instantly (NO fade)
-        whiteScreen.style.display = "block";
-
-        // Show final text instantly without fading
-        textBox.innerText = "TET IS WATCHING";
+function showTextTemporary(t, duration = 2500) {
+    return new Promise(resolve => {
+        textBox.innerText = t;
         textBox.style.opacity = 1;
-        textBox.style.color = "black";
-    }
 
-    sequence();
+        setTimeout(() => {
+            textBox.style.opacity = 0;
+            setTimeout(resolve, 1000);
+        }, duration);
+    });
+}
+
+// WORD-BY-WORD APPEAR, NO FADE
+function spawnWordsLine(words, delayBetween = 700) {
+    return new Promise(resolve => {
+        const line = document.createElement("div");
+        line.className = "line";
+        textBox.appendChild(line);
+
+        let index = 0;
+
+        function reveal() {
+            const w = document.createElement("span");
+            w.className = "word";
+            w.textContent = words[index];
+            line.appendChild(w);
+
+            // pop instantly
+            setTimeout(() => { w.style.opacity = 1; }, 20);
+
+            index++;
+            if (index < words.length) {
+                setTimeout(reveal, delayBetween);
+            } else {
+                resolve();
+            }
+        }
+
+        reveal();
+    });
+}
+
+async function sequence() {
+    await showTextTemporary("This song is a tribute to\n耳のあるロボットの唄\n(Song of the Eared Robot)\nby nwp8861.");
+
+    await showTextTemporary("It is about the truths that lay\nin hiding within artifice,\nand a computer falling in love.");
+
+    // WHITE SCREEN POP
+    whiteScreen.style.display = "block";
+    textBox.style.opacity = 1;
+    textBox.innerHTML = ""; // clear previous text
+
+    // FINAL SEQUENCE — WORD BY WORD  
+    await spawnWordsLine(["Machine", "Love"], 700);
+    await spawnWordsLine(["by", "Jamie", "Paige"], 700);
+    await spawnWordsLine(["featuring", "Kasane", "Teto", "SV"], 700);
+}
+
+sequence();
 </script>
 
 </body>
