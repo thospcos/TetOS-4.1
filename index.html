@@ -70,15 +70,18 @@
 
 <body>
 
+<!-- 🔊 MUSIC (auto-plays when page loads) -->
 <audio id="bgm" src="machine_love.mp3.mp3" autoplay loop></audio>
 
 <div id="screen"></div>
 <div id="textBox">koi o shite.</div>
 
 <script>
+// ==== ELEMENTS ====
 const screen = document.getElementById("screen");
 const textBox = document.getElementById("textBox");
 
+// ==== HELPERS ====
 function setText(t){ textBox.innerText = t; }
 function setHTML(h){ textBox.innerHTML = h; }
 
@@ -94,19 +97,21 @@ function fadeInAll(callback){
     setTimeout(()=>{ if (callback) callback(); }, 600);
 }
 
+// ==== FINAL WHITE SCREEN (NO FADE) ====
 function showFinalWhite() {
-    // Instant pop
+    // disable fades
     screen.style.transition = "none";
     textBox.style.transition = "none";
 
+    // immediate pop
     screen.style.background = "white";
     screen.style.opacity = 1;
 
     textBox.style.color = "black";
-    textBox.style.opacity = 1;
     textBox.innerHTML = "";
+    textBox.style.opacity = 1;
 
-    // Build DOM
+    // build elements
     const line1 = document.createElement("div");
     const span1 = document.createElement("span");
     span1.className = "word";
@@ -144,7 +149,7 @@ function showFinalWhite() {
     textBox.appendChild(line2);
     textBox.appendChild(feat);
 
-    // Reset opacity
+    // start hidden
     span1.style.opacity = 0;
     span2.style.opacity = 0;
     by.style.opacity = 0;
@@ -152,7 +157,7 @@ function showFinalWhite() {
     paige.style.opacity = 0;
     feat.style.opacity = 0;
 
-    // Reveal sequence
+    // reveal sequence
     setTimeout(()=>{ span1.style.opacity = 1; }, 100);
     setTimeout(()=>{ span2.style.opacity = 1; }, 700);
     setTimeout(()=>{ by.style.opacity = 1; }, 1300);
@@ -161,7 +166,8 @@ function showFinalWhite() {
     setTimeout(()=>{ feat.style.opacity = 1; }, 3100);
 }
 
-/* TIMELINE */
+
+// ==== TIMELINE EVENTS ====
 
 setTimeout(()=>{
     fadeOutAll(()=>{
@@ -182,8 +188,8 @@ setTimeout(()=>{
         showFinalWhite();
     });
 }, 31000);
-</script>
 
+</script>
 
 </body>
 </html>
