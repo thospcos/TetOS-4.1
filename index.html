@@ -1,300 +1,176 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TetOS 4.1 — Kasane Teto</title>
-  <meta name="description" content="TetOS 4.1 — A tiny fan OS for Kasane Teto. Play music, read lore, and explore Tet-inspired UI." />
-  
-  <style>
-    :root{
-      --bg:#0b0b0d; /* dark */
-      --panel:#0f1720;
-      --accent:#ff6b6b; /* Tet red-ish */
-      --accent-2:#ffd166; /* warm highlight */
-      --muted:#9aa4b2;
-      --glass: rgba(255,255,255,0.04);
-      --mono: 'Segoe UI Mono', 'Roboto Mono', monospace;
-      --ui-radius:16px;
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+<meta charset="UTF-8">
+<title>Machine Love</title>
+
+<style>
+    html, body {
+        margin:0; padding:0;
+        width:100%; height:100%;
+        background:black; color:white;
+        overflow:hidden;
+        font-family:Georgia, serif;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background: radial-gradient(1200px 600px at 10% 10%, rgba(255,107,107,0.05), transparent),
-                  linear-gradient(180deg,var(--bg), #050507 60%);
-      color:#e6eef6;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:32px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:24px;
-      min-height:100vh;
+    #screen {
+        position:absolute;
+        top:0; left:0;
+        width:100%; height:100%;
+        background:black;
+        opacity:1;
+        transition:opacity .45s ease;
     }
 
-    .shell{
-      width:1080px;
-      max-width:96vw;
-      display:grid;
-      grid-template-columns: 380px 1fr;
-      gap:20px;
-      align-items:start;
+    #textBox {
+        position:absolute;
+        top:50%; left:50%;
+        width:900px; height:140px;
+        margin-left:-450px; margin-top:-70px;
+        font-size:42px;
+        text-align:center;
+        white-space:pre-line;
+        opacity:1;
+        transition:opacity .45s ease;
     }
 
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:var(--ui-radius);
-      padding:18px;
-      box-shadow: 0 6px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.03);
+    .word {
+        display:inline-block;
+        margin-right:18px;
+        opacity:0;
+        transition:opacity .45s ease;
+        font-size:110px;
     }
 
-    /* left panel */
-    .left .logo{
-      display:flex;align-items:center;gap:12px;margin-bottom:12px
-    }
-    .logo .icon{
-      width:68px;height:68px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#ff8fa3);
-      display:grid;place-items:center;font-weight:700;font-size:28px;color:#111
-    }
-    .left h1{margin:0;font-size:20px}
-    .version{color:var(--muted);font-size:13px}
-
-    .avatar{
-      width:100%;height:300px;border-radius:12px;display:grid;place-items:center;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.07));
-      margin-top:10px; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.02)
+    .bySmall {
+        display:inline-block;
+        margin-right:12px;
+        opacity:0;
+        transition:opacity .45s ease;
+        font-size:28px;
     }
 
-    /* cute SVG placeholder */
-    .avatar svg{width:80%;height:80%}
-
-    .controls{display:flex;gap:10px;margin-top:12px}
-    .btn{
-      background:var(--glass);border:1px solid rgba(255,255,255,0.03);padding:10px 12px;border-radius:12px;cursor:pointer;font-weight:600;
-    }
-    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#111}
-
-    /* right content */
-    .right .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px}
-    .terminal{
-      background:#02040a;padding:14px;border-radius:12px;font-family:var(--mono);font-size:13px;color:#9fd2ff;min-height:96px;line-height:1.5;overflow:hidden;border:1px solid rgba(255,255,255,0.02)
+    .artistWord {
+        display:inline-block;
+        margin-left:6px;
+        opacity:0;
+        transition:opacity .45s ease;
+        font-size:64px;
     }
 
-    .typewriter{display:inline-block;white-space:pre}
-    @keyframes blink{50%{opacity:0}}
-    .caret{display:inline-block;width:8px;height:16px;background:#9fd2ff;margin-left:6px;vertical-align:text-bottom;animation:blink 1s infinite}
-
-    .panel-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-
-    .track{display:flex;align-items:center;gap:12px}
-    .track .meta{flex:1}
-    audio{width:100%}
-
-    .about{color:var(--muted);font-size:14px;line-height:1.45}
-
-    footer{color:var(--muted);font-size:12px;margin-top:14px}
-
-    /* responsive */
-    @media (max-width:900px){
-      .shell{grid-template-columns:1fr;}
-      .avatar{height:220px}
+    .feat {
+        margin-top:18px;
+        opacity:0;
+        transition:opacity .45s ease;
+        font-size:28px;
+        display:block;
     }
-
-    /* small decorative sparkles */
-    .sparkle{position:absolute;right:8px;top:8px;opacity:0.12;font-size:14px}
-
-  </style>
+</style>
 </head>
+
 <body>
-  <div class="shell">
-    <aside class="card left">
-      <div class="logo">
-        <div class="icon">T4</div>
-        <div>
-          <h1>TetOS 4.1</h1>
-          <div class="version">Kasane Teto — Fan OS</div>
-        </div>
-      </div>
 
-      <div class="avatar" id="avatar">
-        <!-- Simple stylized SVG as a placeholder avatar for Kasane Teto -- replace with your artwork by swapping innerHTML -->
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kasane Teto avatar placeholder">
-          <defs>
-            <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
-              <stop offset="0" stop-color="#ffd166"/>
-              <stop offset="1" stop-color="#ff6b6b"/>
-            </linearGradient>
-          </defs>
-          <rect x="0" y="0" width="200" height="200" rx="18" fill="url(#g1)"/>
-          <g transform="translate(20,28)">
-            <circle cx="60" cy="60" r="48" fill="#ffffff" opacity="0.96"/>
-            <circle cx="46" cy="50" r="8" fill="#111"/>
-            <circle cx="74" cy="50" r="8" fill="#111"/>
-            <path d="M30 86 q30 18 60 0" stroke="#111" stroke-width="4" fill="none" stroke-linecap="round"/>
-            <text x="8" y="140" font-family="sans-serif" font-size="10" fill="#111">Kasane Teto — TetOS 4.1</text>
-          </g>
-        </svg>
-        <div class="sparkle">★</div>
-      </div>
+<div id="screen"></div>
+<div id="textBox">koi o shite.</div>
 
-      <div class="controls">
-        <button class="btn primary" onclick="playDefault()">Play Teto Sample</button>
-        <button class="btn" id="downloadBtn">Download HTML</button>
-      </div>
+<script>
+const screen = document.getElementById("screen");
+const textBox = document.getElementById("textBox");
 
-      <div style="margin-top:14px;font-size:13px;color:var(--muted)">
-        Replace the avatar by editing the SVG inside <code>#avatar</code> or swap with an <code>&lt;img&gt;</code> tag. Replace the audio source in the player on the right.
-      </div>
-    </aside>
+function setText(t){ textBox.innerText = t; }
+function setHTML(h){ textBox.innerHTML = h; }
 
-    <main class="card right">
-      <div class="topbar">
-        <div>
-          <h2 style="margin:0">Welcome to TetOS 4.1</h2>
-          <div style="color:var(--muted);font-size:13px">A tiny, cute OS shell celebrating Kasane Teto.</div>
-        </div>
-        <div style="text-align:right;color:var(--muted);font-size:13px">build 4.1 — experimental</div>
-      </div>
+function fadeOutAll(callback){
+    screen.style.opacity = 0;
+    textBox.style.opacity = 0;
+    setTimeout(()=>{ if (callback) callback(); }, 600);
+}
 
-      <div class="terminal" aria-live="polite">
-        <span class="typewriter" id="typewriter">Initializing TetOS...</span><span class="caret" aria-hidden="true"></span>
-      </div>
+function fadeInAll(callback){
+    screen.style.opacity = 1;
+    textBox.style.opacity = 1;
+    setTimeout(()=>{ if (callback) callback(); }, 600);
+}
 
-      <div class="panel-grid">
-        <section class="card">
-          <h3 style="margin-top:0">Now playing</h3>
-          <div class="track">
-            <div style="flex:0 0 64px">
-              <div style="width:64px;height:64px;border-radius:10px;background:linear-gradient(135deg,#ff8fa3,#ffd166);display:grid;place-items:center;font-weight:700;color:#111">T4</div>
-            </div>
-            <div class="meta">
-              <strong>Kasane Teto — Sample</strong>
-              <div style="color:var(--muted);font-size:13px">Click play to preview. Replace the source with your .mp3/.ogg.</div>
-              <div style="margin-top:8px">
-                <audio id="player" controls preload="none" onplay="onPlay()">
-                  <!-- Replace this src with your music file -->
-                  <source src="" type="audio/mpeg">
-                  Your browser does not support the audio element.
-                </audio>
-              </div>
-            </div>
-          </div>
-        </section>
+function showFinalWhite(){
+    screen.style.background = "white";
+    textBox.style.color = "black";
+    textBox.innerHTML = "";
 
-        <section class="card">
-          <h3 style="margin-top:0">About</h3>
-          <p class="about">TetOS 4.1 acts as a source hub for everything related to Kasane Teto — pulling inspiration from her presence across the internet. From iconic YouTube covers, classic UTAU demos, community-made figurines, Kyou Hobby Shop merch drops, fan animations, meme edits, Spotify tracks, and full music videos, TetOS gathers the spirit of Teto’s everywhere-at-once energy into a single tiny OS shell. Use it as your personal gateway into all things Teto.</p>
-        </section>
-      </div>
+    let line1 = document.createElement("div");
+    let span1 = document.createElement("span");
+    span1.className = "word";
+    span1.textContent = "Machine";
+    let span2 = document.createElement("span");
+    span2.className = "word";
+    span2.textContent = "Love";
+    line1.appendChild(span1);
+    line1.appendChild(span2);
 
-      <section style="margin-top:12px" class="card">
-        <h3 style="margin-top:0">Extras</h3>
-        <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <button class="btn" onclick="alert('Easter egg: Teto loves cookies 🍪')">Easter Egg</button>
-          <button class="btn" onclick="toggleTheme()">Toggle Light/Dark</button>
-        </div>
-      </section>
+    let line2 = document.createElement("div");
+    let by = document.createElement("span");
+    by.className = "bySmall";
+    by.textContent = "by";
 
-      <footer>
-        Made with ♥ for Kasane Teto · TetOS 4.1
-      </footer>
-      <section class="card" style="margin-top:16px">
-        <h3 style="margin-top:0">Where to Find Teto</h3>
-        <ul style="list-style:none;padding-left:0;font-size:14px;line-height:1.5;color:var(--muted)">
-          <li>• YouTube — Covers, UTAU demos, remixes</li>
-          <li>• NicoNico Douga — Classic Teto content & origins</li>
-          <li>• Spotify — Official and fan-uploaded tracks</li>
-          <li>• Kyou Hobby Shop — Figurines & merch</li>
-          <li>• Fan Animations — Across TikTok, Twitter, and more</li>
-        </ul>
-      </section>
+    let jamie = document.createElement("span");
+    jamie.className = "artistWord";
+    jamie.textContent = "Jamie";
 
-      <section class="card" style="margin-top:16px">
-        <h3 style="margin-top:0">Teto Gallery</h3>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <div style="width:120px;height:120px;background:var(--glass);border-radius:12px;display:grid;place-items:center;color:var(--muted);font-size:12px">Image 1</div>
-          <div style="width:120px;height:120px;background:var(--glass);border-radius:12px;display:grid;place-items:center;color:var(--muted);font-size:12px">Image 2</div>
-          <div style="width:120px;height:120px;background:var(--glass);border-radius:12px;display:grid;place-items:center;color:var(--muted);font-size:12px">Image 3</div>
-        </div>
-      </section>
+    let paige = document.createElement("span");
+    paige.className = "artistWord";
+    paige.textContent = "Paige";
 
-      <section class="card" style="margin-top:16px">
-        <h3 style="margin-top:0">Kasane Teto Facts</h3>
-        <ul style="list-style:none;padding-left:0;font-size:14px;line-height:1.5;color:var(--muted)">
-          <li>• Born April 1st — Teto Day</li>
-          <li>• Originally an UTAU voicebank</li>
-          <li>• Known for her iconic drill‑twin‑tails</li>
-          <li>• Famous song: "Kasane Territory"</li>
-          <li>• Loved for her chaotic yet charming energy</li>
-        </ul>
-      </section>
+    line2.appendChild(by);
+    line2.appendChild(jamie);
+    line2.appendChild(paige);
 
-</main>
-  </div>
+    let feat = document.createElement("div");
+    feat.className = "feat";
+    feat.textContent = "featuring Kasane Teto SV";
 
-  <script>
-    // Simple typewriter effect for the terminal
-    const txt = `Welcome to TetOS 4.1\nUser: fan@teto\nLoading modules: avatar, audio, nostalgia...\nReady.`;
-    const el = document.getElementById('typewriter');
-    let i=0;
-    function typeNext(){
-      if(i<=txt.length){
-        el.textContent = txt.slice(0,i);
-        i++;
-        setTimeout(typeNext, 28 + (Math.random()*40));
-      }
-    }
-    typeNext();
+    textBox.appendChild(line1);
+    textBox.appendChild(line2);
+    textBox.appendChild(feat);
 
-    // Play a default tiny beep if no audio file is present
-    function playDefault(){
-      const p = document.getElementById('player');
-      if(p.querySelector('source').src === '' || !p.querySelector('source').src){
-        // create small generated tone
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type='sine';o.frequency.value=880;g.gain.value=0.02; o.connect(g);g.connect(ctx.destination);o.start();
-        setTimeout(()=>{o.stop();ctx.close()},300);
-      } else {
-        p.play();
-      }
-    }
+    textBox.style.opacity = 0;
+    screen.style.opacity = 0;
 
-    function onPlay(){
-      // small UI tweak when music plays
-      document.querySelector('.logo .icon').style.transform = 'scale(1.02)';
-      setTimeout(()=>document.querySelector('.logo .icon').style.transform='scale(1)',800);
-    }
+    setTimeout(()=>{
+        fadeInAll(()=>{
+            textBox.style.opacity = 1;
 
-    function toggleTheme(){
-      if(document.documentElement.style.getPropertyValue('--bg')===''){
-        document.documentElement.style.setProperty('--bg','#f4f7fb');
-        document.documentElement.style.setProperty('--panel','#fff');
-        document.documentElement.style.setProperty('--muted','#3b4a59');
-        document.body.style.color = '#071022';
-      } else {
-        document.documentElement.style.setProperty('--bg','#0b0b0d');
-        document.documentElement.style.setProperty('--panel','#0f1720');
-        document.documentElement.style.setProperty('--muted','#9aa4b2');
-        document.body.style.color = '#e6eef6';
-        document.documentElement.style.removeProperty('--bg');
-      }
-    }
+            setTimeout(()=>{ span1.style.opacity = 1; }, 600);
+            setTimeout(()=>{ span2.style.opacity = 1; }, 1200);
+            setTimeout(()=>{ by.style.opacity = 1; }, 1800);
+            setTimeout(()=>{ jamie.style.opacity = 1; }, 2400);
+            setTimeout(()=>{ paige.style.opacity = 1; }, 3000);
+            setTimeout(()=>{ feat.style.opacity = 1; }, 3600);
+        });
+    }, 80);
+}
 
-    // Download the page as a single-file HTML for easy hosting
-    document.getElementById('downloadBtn').addEventListener('click', ()=>{
-      const blob = new Blob([`<!doctype html>\n${document.documentElement.outerHTML}`],{type:'text/html'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'tetos-4.1-kasane-teto.html';
-      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+/* TIMELINE */
+
+setTimeout(()=>{
+    fadeOutAll(()=>{
+        setText("This song is a tribute to\n耳のあるロボットの唄\n(Song of the Eared Robot) by nwp8861.");
+        fadeInAll();
     });
+}, 21000);
 
-  </script>
+setTimeout(()=>{
+    fadeOutAll(()=>{
+        setText("It is about the truths that lay\nin hiding within artifice,\nand a computer falling in love.");
+        fadeInAll();
+    });
+}, 27000);
+
+setTimeout(()=>{
+    fadeOutAll(()=>{
+        showFinalWhite();
+    });
+}, 31000);
+</script>
+
 </body>
 </html>
